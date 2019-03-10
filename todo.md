@@ -1,8 +1,6 @@
 # ToDo
 
 ## Java
-1) Change groupId to `stef.projects.console` so you can (in the future) group your console applications under this group id
-2) Change base-package to `stef.projects.console` as well
 3) Create the appropriate structure of packages under your base package. It is recommended (and common) to use a Model-View-Controller (i.e. MVC) architecture for the application. That is because it separates our classes/files in such a way that we can easily add/remove/replace layers.
     
     1) **view**<br/>
