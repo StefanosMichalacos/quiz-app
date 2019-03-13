@@ -1,4 +1,4 @@
-package stef.projects;
+package stef.projects.console;
 
 public class User {
 
