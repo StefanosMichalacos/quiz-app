@@ -7,6 +7,35 @@ public class User {
     private String username;
     private String email;
     private String Password;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
     private UserRole userRole;
 
     public User (long id,String firstName,String lastName, String username, String email, String password, UserRole userRole){
