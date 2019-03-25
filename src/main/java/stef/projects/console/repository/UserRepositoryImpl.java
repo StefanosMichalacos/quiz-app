@@ -27,16 +27,14 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean saveUser(User user) throws SQLException {
         PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SAVE_USER_QUERY);
         fillPreparedStatement(user, statement, false);
-        int update = statement.executeUpdate();
-        return extractStatus(update);
+        return DatabaseConnection.extractStatus(statement.executeUpdate());
     }
 
     @Override
     public boolean updateUser(User user) throws SQLException {
         PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(UPDATE_USER_QUERY);
         fillPreparedStatement(user, statement, true);
-        int update = statement.executeUpdate();
-        return extractStatus(update);
+        return DatabaseConnection.extractStatus(statement.executeUpdate());
     }
 
 
@@ -44,8 +42,7 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean deleteUserById(Long id) throws SQLException {
         PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(DELETE_USER_QUERY);
         statement.setLong(1, id);
-        int update = statement.executeUpdate();
-        return extractStatus(update);
+        return DatabaseConnection.extractStatus(statement.executeUpdate());
     }
     // we have to make sure to erase all other records associated with this user.
 
@@ -130,14 +127,6 @@ public class UserRepositoryImpl implements UserRepository {
             userList.add(user);
         }
         return userList;
-    }
-
-    private boolean extractStatus(int status) {
-        if (status == 1) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private void fillPreparedStatement(User user, PreparedStatement statement, boolean shouldUpdate) throws SQLException {
