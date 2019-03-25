@@ -53,7 +53,7 @@ public class UserRepositoryImpl implements UserRepository {
         List<User> userList = new ArrayList<>();
         while (resultSet.next()) {
             showUser(resultSet);
-            User user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            User user = extractUser(resultSet);
             userList.add(user);
         }
         return userList;
@@ -67,7 +67,7 @@ public class UserRepositoryImpl implements UserRepository {
         User user = null;
         while (resultSet.next()) {
             showUser(resultSet);
-            user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            user = extractUser(resultSet);
         }
         return user;
     }
@@ -81,7 +81,7 @@ public class UserRepositoryImpl implements UserRepository {
         User user = null;
         while (resultSet.next()) {
             showUser(resultSet);
-            user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            user = extractUser(resultSet);
         }
         return user;
     }
@@ -95,7 +95,7 @@ public class UserRepositoryImpl implements UserRepository {
         User user = null;
         while (resultSet.next()) {
             showUser(resultSet);
-            user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            user = extractUser(resultSet);
         }
         return user;
     }
@@ -108,7 +108,7 @@ public class UserRepositoryImpl implements UserRepository {
         List<User> userList = new ArrayList<>();
         while (resultSet.next()) {
             showUser(resultSet);
-            User user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            User user = extractUser(resultSet);
             userList.add(user);
         }
         return userList;
@@ -123,7 +123,7 @@ public class UserRepositoryImpl implements UserRepository {
         List<User> userList = new ArrayList<>();
         while (resultSet.next()) {
             showUser(resultSet);
-            User user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            User user = extractUser(resultSet);
             userList.add(user);
         }
         return userList;
@@ -151,8 +151,15 @@ public class UserRepositoryImpl implements UserRepository {
         System.out.println(resultSet.getString("value") + " ");
     }
 
-    private User extractUser(long id, String first_name, String last_name, String username, String email, String password, String userRole) {
-        return new User(id, first_name, last_name, username, email, password, UserRole.reverseValue(userRole));
+    private User extractUser(ResultSet resultSet) throws SQLException {
+        long id = resultSet.getLong("id");
+        String firstName = resultSet.getString("first_name");
+        String lastName = resultSet.getString("last_name");
+        String username = resultSet.getString("username");
+        String email = resultSet.getString("email");
+        String password = resultSet.getString("password");
+        String userRole = resultSet.getString("value");
+        return new User(id, firstName, lastName, username, email, password, UserRole.reverseValue(userRole));
     }
 }
 
