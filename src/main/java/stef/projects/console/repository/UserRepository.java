@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface UserRepository {
 
-     Boolean saveUser(User user) throws SQLException;
+     boolean saveUser(User user) throws SQLException;
 
-     Boolean updateUser(User user) throws SQLException;
+     boolean updateUser(User user) throws SQLException;
 
-     Boolean deleteUserById(Long id) throws SQLException;
+     boolean deleteUserById(Long id) throws SQLException;
 
      List<User> findAllUsers() throws SQLException;
 

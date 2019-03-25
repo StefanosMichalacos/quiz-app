@@ -2,6 +2,7 @@ package stef.projects.console.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
@@ -14,7 +15,7 @@ public class DatabaseConnection {
     private DatabaseConnection() {
     }
 
-    public static Connection getConnection() {
+    private static Connection getConnection() {
         if (CONNECTION == null){
             try {
                 CONNECTION = initializeConnection();
@@ -30,4 +31,7 @@ public class DatabaseConnection {
 
     }
 
+    public static PreparedStatement getPreparedStatementFromQuery(String query) throws SQLException {
+        return DatabaseConnection.getConnection().prepareStatement(query);
+    }
 }

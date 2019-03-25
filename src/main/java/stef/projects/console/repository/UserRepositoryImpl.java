@@ -22,157 +22,132 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String SELECT_BY_USERNAME_AND_PASSWORD_QUERY = "select * from \"user\" as u inner join \"user_role\" as r on u.\"user_role_id\" = r.id where username = ? and \"password\" = ?;";
     private static final String SELECT_BY_USER_ROLE_QUERY = "select * from \"user\" as u inner join \"user_role\" as r on u.\"user_role_id\" = r.id where \"value\" = ?;";
     private static final String SELECT_BY_FIRST_OR_LAST_NAME_QUERY = "select * from \"user\" as u inner join \"user_role\" as r on u.\"user_role_id\" = r.id where first_name = ? or last_name = ?;";
-    private PreparedStatement statement;
-    private User quizAppUser;
-    private List<User> quizAppUserList = new ArrayList<>();
-    private boolean successful;
-
-
-    public static void main(String[] args) throws SQLException {
-//        new UserRepositoryImpl().findUserById(3L);
-//        new UserRepositoryImpl().deleteUserById(6L);
-//        new UserRepositoryImpl().findAllUsers();
-//        new UserRepositoryImpl().findUserByEmail("stefanosmichalacos@gmail.com");
-//        new UserRepositoryImpl().findUsernameAndPassword("StefanosM", "0000");
-//        new UserRepositoryImpl().findUsersByUserRole(UserRole.USER);
-//        new UserRepositoryImpl().findUserByFirstNameOrLastName("Stefanos", "Polyzos");
-//        new UserRepositoryImpl().saveUser(new User( 0, "Elma", "Michalcou", "ELmaM", "elmamichalacou@gmail.com", "4444", UserRole.USER));
-        new UserRepositoryImpl().updateUser(new User( 5, "Dyo", "Karabi", "Palio", "sapiokaravo", "4444", UserRole.USER));
-
-    }
 
     @Override
-    public Boolean saveUser(User user) throws SQLException {
-        System.out.println("SAVE_USER_QUERY");
-        statement = dbConnection(SAVE_USER_QUERY);
-        extractStatement(user, false);
+    public boolean saveUser(User user) throws SQLException {
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SAVE_USER_QUERY);
+        fillPreparedStatement(user, statement, false);
         int update = statement.executeUpdate();
-        if (update == 1) {
-            successful = true;
-        }
-        return successful;
+        return extractStatus(update);
     }
 
     @Override
-    public Boolean updateUser(User user) throws SQLException {
-
-        System.out.println("UPDATE_USER_QUERY");
-        statement = dbConnection(UPDATE_USER_QUERY);
-        extractStatement(user,true);
+    public boolean updateUser(User user) throws SQLException {
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(UPDATE_USER_QUERY);
+        fillPreparedStatement(user, statement, true);
         int update = statement.executeUpdate();
-        if (update == 1) {
-            successful = true;
-        }
-        return successful;
+        return extractStatus(update);
     }
 
 
-
     @Override
-    public Boolean deleteUserById(Long id) throws SQLException {
-
-        System.out.println("DELETE_USER_QUERY");
-        statement = dbConnection(DELETE_USER_QUERY);
+    public boolean deleteUserById(Long id) throws SQLException {
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(DELETE_USER_QUERY);
         statement.setLong(1, id);
         int update = statement.executeUpdate();
-        if (update == 1) {
-            successful = true;
-        }
-        return successful;
+        return extractStatus(update);
     }
     // we have to make sure to erase all other records associated with this user.
 
     @Override
     public List<User> findAllUsers() throws SQLException {
-        System.out.println("SELECT_ALL_QUERY");
-        statement = dbConnection(SELECT_ALL_QUERY);
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SELECT_ALL_QUERY);
         ResultSet resultSet = statement.executeQuery();
+        List<User> userList = new ArrayList<>();
         while (resultSet.next()) {
             showUser(resultSet);
-            quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
-            quizAppUserList.add(quizAppUser);
+            User user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            userList.add(user);
         }
-        return quizAppUserList;
+        return userList;
     }
 
     @Override
     public User findUserById(Long id) throws SQLException {
-        System.out.println("SELECT_BY_ID_QUERY");
-        statement = dbConnection(SELECT_BY_ID_QUERY);
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SELECT_BY_ID_QUERY);
         statement.setLong(1, id);
         ResultSet resultSet = statement.executeQuery();
+        User user = null;
         while (resultSet.next()) {
             showUser(resultSet);
-            quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
         }
-        return quizAppUser;
+        return user;
     }
 
 
     @Override
     public User findUserByEmail(String email) throws SQLException {
-        System.out.println("SELECT_BY_EMAIL_QUERY");
-        statement = dbConnection(SELECT_BY_EMAIL_QUERY);
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SELECT_BY_EMAIL_QUERY);
         statement.setString(1, email);
         ResultSet resultSet = statement.executeQuery();
+        User user = null;
         while (resultSet.next()) {
             showUser(resultSet);
-            quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
         }
-        return quizAppUser;
+        return user;
     }
 
     @Override
     public User findUsernameAndPassword(String username, String password) throws SQLException { //find or validate
-        System.out.println("SELECT_BY_USERNAME_AND_PASSWORD_QUERY");
-        statement = dbConnection(SELECT_BY_USERNAME_AND_PASSWORD_QUERY);
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SELECT_BY_USERNAME_AND_PASSWORD_QUERY);
         statement.setString(1, username);
         statement.setString(2, password);
         ResultSet resultSet = statement.executeQuery();
+        User user = null;
         while (resultSet.next()) {
             showUser(resultSet);
-            quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
         }
-        return quizAppUser;
+        return user;
     }
 
     @Override
     public List<User> findUsersByUserRole(UserRole userRole) throws SQLException {
-        System.out.println("SELECT_BY_USER_ROLE_QUERY");
-        statement = dbConnection(SELECT_BY_USER_ROLE_QUERY);
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SELECT_BY_USER_ROLE_QUERY);
         statement.setString(1, UserRole.getValue(userRole));
         ResultSet resultSet = statement.executeQuery();
+        List<User> userList = new ArrayList<>();
         while (resultSet.next()) {
             showUser(resultSet);
-            quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
-            quizAppUserList.add(quizAppUser);
+            User user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            userList.add(user);
         }
-        return quizAppUserList;
+        return userList;
     }
 
     @Override
     public List<User> findUserByFirstNameOrLastName(String fistName, String lastName) throws SQLException {
-        System.out.println("SELECT_BY_FIRST_OR_LAST_NAME_QUERY");
-        statement = dbConnection(SELECT_BY_FIRST_OR_LAST_NAME_QUERY);
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SELECT_BY_FIRST_OR_LAST_NAME_QUERY);
         statement.setString(1, fistName);
         statement.setString(2, lastName);
         ResultSet resultSet = statement.executeQuery();
+        List<User> userList = new ArrayList<>();
         while (resultSet.next()) {
             showUser(resultSet);
-            quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
-            quizAppUserList.add(quizAppUser);
+            User user = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            userList.add(user);
         }
-        return quizAppUserList;
+        return userList;
     }
 
-    private void extractStatement(User user, boolean update) throws SQLException {
+    private boolean extractStatus(int status) {
+        if (status == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void fillPreparedStatement(User user, PreparedStatement statement, boolean shouldUpdate) throws SQLException {
         statement.setString(1, user.getFirstName());
         statement.setString(2, user.getLastName());
         statement.setString(3, user.getUsername());
         statement.setString(4, user.getEmail());
         statement.setString(5, user.getPassword());
         statement.setLong(6, UserRole.getNumberValue(user.getUserRole()));
-        if (update){
+        if (shouldUpdate) {
             statement.setLong(7, user.getId());
         }
     }
@@ -185,10 +160,6 @@ public class UserRepositoryImpl implements UserRepository {
         System.out.print(resultSet.getString("email") + ", ");
         System.out.print(resultSet.getString("password") + " ");
         System.out.println(resultSet.getString("value") + " ");
-    }
-
-    private PreparedStatement dbConnection(String query) throws SQLException {
-        return DatabaseConnection.getConnection().prepareStatement(query);
     }
 
     private User extractUser(long id, String first_name, String last_name, String username, String email, String password, String userRole) {
