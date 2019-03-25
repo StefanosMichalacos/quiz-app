@@ -24,19 +24,28 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String SELECT_BY_FIRST_OR_LAST_NAME_QUERY = "select * from \"user\" as u inner join \"user_role\" as r on u.\"user_role_id\" = r.id where first_name = ? or last_name = ?;";
     private PreparedStatement statement;
     private User quizAppUser;
-    private List<User> userList = new ArrayList<>();
+    private List<User> quizAppUserList = new ArrayList<>();
     private boolean successful;
+
+
+    public static void main(String[] args) throws SQLException {
+//        new UserRepositoryImpl().findUserById(3L);
+//        new UserRepositoryImpl().deleteUserById(6L);
+//        new UserRepositoryImpl().findAllUsers();
+//        new UserRepositoryImpl().findUserByEmail("stefanosmichalacos@gmail.com");
+//        new UserRepositoryImpl().findUsernameAndPassword("StefanosM", "0000");
+//        new UserRepositoryImpl().findUsersByUserRole(UserRole.USER);
+//        new UserRepositoryImpl().findUserByFirstNameOrLastName("Stefanos", "Polyzos");
+//        new UserRepositoryImpl().saveUser(new User( 0, "Elma", "Michalcou", "ELmaM", "elmamichalacou@gmail.com", "4444", UserRole.USER));
+        new UserRepositoryImpl().updateUser(new User( 5, "Dyo", "Karabi", "Palio", "sapiokaravo", "4444", UserRole.USER));
+
+    }
 
     @Override
     public Boolean saveUser(User user) throws SQLException {
         System.out.println("SAVE_USER_QUERY");
         statement = dbConnection(SAVE_USER_QUERY);
-        statement.setString(1, user.getFirstName());
-        statement.setString(2, user.getLastName());
-        statement.setString(3, user.getUsername());
-        statement.setString(4, user.getEmail());
-        statement.setString(5, user.getPassword());
-        statement.setLong(6, UserRole.getNumberValue(user.getUserRole()));
+        extractStatement(user, false);
         int update = statement.executeUpdate();
         if (update == 1) {
             successful = true;
@@ -49,13 +58,7 @@ public class UserRepositoryImpl implements UserRepository {
 
         System.out.println("UPDATE_USER_QUERY");
         statement = dbConnection(UPDATE_USER_QUERY);
-        statement.setString(1, user.getFirstName());
-        statement.setString(2, user.getLastName());
-        statement.setString(3, user.getUsername());
-        statement.setString(4, user.getEmail());
-        statement.setString(5, user.getPassword());
-        statement.setLong(6, UserRole.getNumberValue(user.getUserRole()));
-        statement.setLong(7, user.getId());
+        extractStatement(user,true);
         int update = statement.executeUpdate();
         if (update == 1) {
             successful = true;
@@ -63,16 +66,18 @@ public class UserRepositoryImpl implements UserRepository {
         return successful;
     }
 
+
+
     @Override
     public Boolean deleteUserById(Long id) throws SQLException {
 
-    System.out.println("DELETE_USER_QUERY");
-    statement = dbConnection(DELETE_USER_QUERY);
-    statement.setLong(1, id);
-    int update = statement.executeUpdate();
+        System.out.println("DELETE_USER_QUERY");
+        statement = dbConnection(DELETE_USER_QUERY);
+        statement.setLong(1, id);
+        int update = statement.executeUpdate();
         if (update == 1) {
-        successful = true;
-    }
+            successful = true;
+        }
         return successful;
     }
     // we have to make sure to erase all other records associated with this user.
@@ -83,16 +88,11 @@ public class UserRepositoryImpl implements UserRepository {
         statement = dbConnection(SELECT_ALL_QUERY);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
-//            System.out.print(resultSet.getLong("id") + ", ");
-//            System.out.print(resultSet.getString("first_name") + ", ");
-//            System.out.print(resultSet.getString("last_name") + ", ");
-//            System.out.print(resultSet.getString("username") + ", ");
-//            System.out.print(resultSet.getString("email") + ", ");
-//            System.out.print(resultSet.getString("password") + " ");
-//            System.out.println(resultSet.getString("value") + " ");
+            showUser(resultSet);
             quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
+            quizAppUserList.add(quizAppUser);
         }
-        return null;
+        return quizAppUserList;
     }
 
     @Override
@@ -102,11 +102,10 @@ public class UserRepositoryImpl implements UserRepository {
         statement.setLong(1, id);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
+            showUser(resultSet);
             quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
-            System.out.println(quizAppUser.getId() + quizAppUser.getFirstName() + quizAppUser.getLastName() + quizAppUser.getUsername() + quizAppUser.getEmail() + quizAppUser.getPassword() + UserRole.getValue(quizAppUser.getUserRole()));
-            // crate method to convert the column fields to user variables
         }
-        return null;
+        return quizAppUser;
     }
 
 
@@ -117,10 +116,10 @@ public class UserRepositoryImpl implements UserRepository {
         statement.setString(1, email);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
+            showUser(resultSet);
             quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
-            System.out.println(quizAppUser.getId() + quizAppUser.getFirstName() + quizAppUser.getLastName() + quizAppUser.getUsername() + quizAppUser.getEmail() + quizAppUser.getPassword() + UserRole.getValue(quizAppUser.getUserRole()));
         }
-        return null;
+        return quizAppUser;
     }
 
     @Override
@@ -131,10 +130,10 @@ public class UserRepositoryImpl implements UserRepository {
         statement.setString(2, password);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
+            showUser(resultSet);
             quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
-            System.out.println(quizAppUser.getId() + quizAppUser.getFirstName() + quizAppUser.getLastName() + quizAppUser.getUsername() + quizAppUser.getEmail() + quizAppUser.getPassword() + UserRole.getValue(quizAppUser.getUserRole()));
         }
-        return null;
+        return quizAppUser;
     }
 
     @Override
@@ -144,11 +143,11 @@ public class UserRepositoryImpl implements UserRepository {
         statement.setString(1, UserRole.getValue(userRole));
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
+            showUser(resultSet);
             quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
-            System.out.println(quizAppUser.getId() + quizAppUser.getFirstName() + quizAppUser.getLastName() + quizAppUser.getUsername() + quizAppUser.getEmail() + quizAppUser.getPassword() + UserRole.getValue(quizAppUser.getUserRole()));
-            userList.add(quizAppUser);
+            quizAppUserList.add(quizAppUser);
         }
-        return userList;
+        return quizAppUserList;
     }
 
     @Override
@@ -159,11 +158,33 @@ public class UserRepositoryImpl implements UserRepository {
         statement.setString(2, lastName);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
+            showUser(resultSet);
             quizAppUser = extractUser(resultSet.getLong("id"), resultSet.getString("first_name"), resultSet.getString("last_name"), resultSet.getString("username"), resultSet.getString("email"), resultSet.getString("password"), resultSet.getString("value"));
-            System.out.println(quizAppUser.getId() + quizAppUser.getFirstName() + quizAppUser.getLastName() + quizAppUser.getUsername() + quizAppUser.getEmail() + quizAppUser.getPassword() + UserRole.getValue(quizAppUser.getUserRole()));
-            userList.add(quizAppUser);
+            quizAppUserList.add(quizAppUser);
         }
-        return userList;
+        return quizAppUserList;
+    }
+
+    private void extractStatement(User user, boolean update) throws SQLException {
+        statement.setString(1, user.getFirstName());
+        statement.setString(2, user.getLastName());
+        statement.setString(3, user.getUsername());
+        statement.setString(4, user.getEmail());
+        statement.setString(5, user.getPassword());
+        statement.setLong(6, UserRole.getNumberValue(user.getUserRole()));
+        if (update){
+            statement.setLong(7, user.getId());
+        }
+    }
+
+    private void showUser(ResultSet resultSet) throws SQLException {
+        System.out.print(resultSet.getLong("id") + ", ");
+        System.out.print(resultSet.getString("first_name") + ", ");
+        System.out.print(resultSet.getString("last_name") + ", ");
+        System.out.print(resultSet.getString("username") + ", ");
+        System.out.print(resultSet.getString("email") + ", ");
+        System.out.print(resultSet.getString("password") + " ");
+        System.out.println(resultSet.getString("value") + " ");
     }
 
     private PreparedStatement dbConnection(String query) throws SQLException {
