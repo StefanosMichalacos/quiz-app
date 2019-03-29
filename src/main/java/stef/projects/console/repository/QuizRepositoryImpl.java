@@ -9,9 +9,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuizRepositoryImpl implements QuizRepository {
+public class QuizRepositoryImpl implements GenericRepository<Quiz, Long>, DescriptionRepository<Quiz> {
 
-    private static final String SAVE_QUERY = "insert into \"quiz\" values (default, ?);";
+    private static final String INSERT_QUERY = "insert into \"quiz\" values (default, ?);";
     private static final String DELETE_BY_ID_QUERY = "delete from \"quiz\" where id = ?";
     private static final String UPDATE_QUERY = "update \"quiz\" set description = ? where id = ?;";
     private static final String SELECT_BY_ID_QUERY = "select * from \"quiz\" where id = ?;";
@@ -21,7 +21,7 @@ public class QuizRepositoryImpl implements QuizRepository {
 
     @Override
     public boolean insert(Quiz quiz) throws SQLException {
-        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SAVE_QUERY);
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(INSERT_QUERY);
         fillPreparedStatement(quiz, statement, false);
         return DatabaseConnection.extractStatus(statement.executeUpdate());
     }
@@ -67,7 +67,7 @@ public class QuizRepositoryImpl implements QuizRepository {
     }
 
     @Override
-    public List<Quiz> findQuizByDescription(String... strings) throws SQLException {
+    public List<Quiz> findByDescription(String... strings) throws SQLException {
         String query = extractQuery(strings.length);
         PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(query);
         fillDescriptionStatement(statement, strings);

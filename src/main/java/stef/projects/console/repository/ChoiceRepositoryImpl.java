@@ -2,7 +2,6 @@ package stef.projects.console.repository;
 
 import stef.projects.console.config.DatabaseConnection;
 import stef.projects.console.domain.Choice;
-import stef.projects.console.domain.Quiz;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,9 +9,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChoiceRepositoryImpl implements ChoiceRepository {
+public class ChoiceRepositoryImpl implements GenericRepository<Choice, Long>,DescriptionRepository<Choice> {
 
-    private static final String SAVE_QUERY = "insert into \"choice\" values (default, ?);";
+    private static final String INSERT_QUERY = "insert into \"choice\" values (default, ?);";
     private static final String DELETE_BY_ID_QUERY = "delete from \"choice\" where id = ?";
     private static final String UPDATE_QUERY = "update \"choice\" set description = ? where id = ?;";
     private static final String SELECT_BY_ID_QUERY = "select * from \"choice\" where id = ?;";
@@ -22,7 +21,7 @@ public class ChoiceRepositoryImpl implements ChoiceRepository {
 
     @Override
     public boolean insert(Choice choice) throws SQLException {
-        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SAVE_QUERY);
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(INSERT_QUERY);
         fillPreparedStatement(choice, statement, false);
         return DatabaseConnection.extractStatus(statement.executeUpdate());
     }
@@ -68,7 +67,7 @@ public class ChoiceRepositoryImpl implements ChoiceRepository {
     }
 
     @Override
-    public List<Choice> findQuizByDescription(String... strings) throws SQLException {
+    public List<Choice> findByDescription(String... strings) throws SQLException {
         String query = extractQuery(strings.length);
         PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(query);
         fillDescriptionStatement(statement, strings);

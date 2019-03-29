@@ -11,7 +11,7 @@ import java.util.List;
 
 public class QuizQuestionRepositoryImpl implements GenericRepository<QuizQuestion,Long> {
 
-    private static final String SAVE_QUERY = "insert into \"quiz_question\" values (default, ?, ?);";
+    private static final String INSERT_QUERY = "insert into \"quiz_question\" values (default, ?, ?);";
     private static final String DELETE_BY_ID_QUERY = "delete from \"quiz_question\" where id = ?";
     private static final String UPDATE_QUERY = "update \"quiz_question\" set quiz_id = ?, question_id = ? where id = ?;";
     private static final String SELECT_BY_ID_QUERY = "select a.*, b.description as quiz_description, c.* from \"quiz_question\"as a inner join \"quiz\" as b on a.quiz_id = b.id inner join \"question\" as c on a.question_id = c.id ;";
@@ -20,7 +20,7 @@ public class QuizQuestionRepositoryImpl implements GenericRepository<QuizQuestio
 
     @Override
     public boolean insert(QuizQuestion quizQuestion) throws SQLException {
-        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SAVE_QUERY);
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(INSERT_QUERY);
         fillPreparedStatement(quizQuestion, statement, false);
         return DatabaseConnection.extractStatus(statement.executeUpdate());
     }

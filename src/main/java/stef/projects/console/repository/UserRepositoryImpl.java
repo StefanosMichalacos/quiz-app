@@ -13,9 +13,9 @@ import java.util.List;
 public class UserRepositoryImpl implements UserRepository {
 
 
-    private static final String SAVE_USER_QUERY = "insert into \"user\" values (default, ?, ?, ?, ?, ?, ?);";
-    private static final String DELETE_USER_QUERY = "delete from \"user\" where id = ?";
-    private static final String UPDATE_USER_QUERY = "update \"user\" set first_name = ?, last_name = ?, username = ?, email = ?, \"password\" = ?, \"user_role_id\" = ? where id = ?;";
+    private static final String INSERT_QUERY = "insert into \"user\" values (default, ?, ?, ?, ?, ?, ?);";
+    private static final String DELETE_QUERY = "delete from \"user\" where id = ?";
+    private static final String UPDATE_QUERY = "update \"user\" set first_name = ?, last_name = ?, username = ?, email = ?, \"password\" = ?, \"user_role_id\" = ? where id = ?;";
     private static final String SELECT_BY_ID_QUERY = "select * from \"user\" as u inner join \"user_role\" as r on u.\"user_role_id\" = r.id where u.id = ?;";
     private static final String SELECT_ALL_QUERY = "select * from \"user\" as u inner join \"user_role\" as r on u.\"user_role_id\" = r.id ;";
     private static final String SELECT_BY_EMAIL_QUERY = "select * from \"user\" as u inner join \"user_role\" as r on u.\"user_role_id\" = r.id where email = ?;";
@@ -24,30 +24,30 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String SELECT_BY_FIRST_OR_LAST_NAME_QUERY = "select * from \"user\" as u inner join \"user_role\" as r on u.\"user_role_id\" = r.id where first_name = ? or last_name = ?;";
 
     @Override
-    public boolean saveUser(User user) throws SQLException {
-        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SAVE_USER_QUERY);
+    public boolean insert(User user) throws SQLException {
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(INSERT_QUERY);
         fillPreparedStatement(user, statement, false);
         return DatabaseConnection.extractStatus(statement.executeUpdate());
     }
 
     @Override
-    public boolean updateUser(User user) throws SQLException {
-        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(UPDATE_USER_QUERY);
+    public boolean update(User user) throws SQLException {
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(UPDATE_QUERY);
         fillPreparedStatement(user, statement, true);
         return DatabaseConnection.extractStatus(statement.executeUpdate());
     }
 
 
     @Override
-    public boolean deleteUserById(Long id) throws SQLException {
-        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(DELETE_USER_QUERY);
-        statement.setLong(1, id);
+    public boolean deleteById(Long aLong) throws SQLException {
+        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(DELETE_QUERY);
+        statement.setLong(1, aLong);
         return DatabaseConnection.extractStatus(statement.executeUpdate());
     }
     // we have to make sure to erase all other records associated with this user.
 
     @Override
-    public List<User> findAllUsers() throws SQLException {
+    public List<User> findAll() throws SQLException {
         PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SELECT_ALL_QUERY);
         ResultSet resultSet = statement.executeQuery();
         List<User> userList = new ArrayList<>();
@@ -60,7 +60,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User findUserById(Long id) throws SQLException {
+    public User findById(Long id) throws SQLException {
         PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SELECT_BY_ID_QUERY);
         statement.setLong(1, id);
         ResultSet resultSet = statement.executeQuery();

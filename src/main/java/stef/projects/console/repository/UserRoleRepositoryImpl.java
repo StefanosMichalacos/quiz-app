@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRoleRepositoryImpl implements GenericRepository<UserRole , Long>, UserRoleRepository{
-    private static final String SAVE_QUERY = "insert into \"user_role\" values (default, ?);";
+    private static final String INSERT_QUERY = "insert into \"user_role\" values (default, ?);";
     private static final String DELETE_BY_ID_QUERY = "delete from \"user_role\" where id = ?";
     private static final String UPDATE_QUERY = "update \"user_role\" set description = ? where id = ?;";
     private static final String SELECT_BY_ID_QUERY = "select * from \"user_role\" where id = ?;";
@@ -20,7 +20,7 @@ public class UserRoleRepositoryImpl implements GenericRepository<UserRole , Long
 
     @Override
     public boolean insert(UserRole userRole) throws SQLException {
-//        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(SAVE_QUERY);
+//        PreparedStatement statement = DatabaseConnection.getPreparedStatementFromQuery(INSERT_QUERY);
 //        fillPreparedStatement(userRole, statement, false);
 //        return DatabaseConnection.extractStatus(statement.executeUpdate());
         return false;
