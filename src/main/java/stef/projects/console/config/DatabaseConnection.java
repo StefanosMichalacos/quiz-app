@@ -34,4 +34,11 @@ public class DatabaseConnection {
     public static PreparedStatement getPreparedStatementFromQuery(String query) throws SQLException {
         return DatabaseConnection.getConnection().prepareStatement(query);
     }
+
+    public static boolean extractStatus(int status) {
+        if (status == 1) {
+            return true;
+        }
+        return false;
+    }
 }

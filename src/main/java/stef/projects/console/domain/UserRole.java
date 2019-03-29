@@ -6,19 +6,19 @@ public enum UserRole {
     USER("USER", 2L);
 
     private String value;
-    private Long numberValue;
+    private Long Id;
 
-    UserRole(String value, Long numberValue){
+    UserRole(String value, Long Id){
         this.value = value;
-        this.numberValue = numberValue;
+        this.Id = Id;
     }
 
     public static String getValue(UserRole userRole){
         return userRole.value;
     }
 
-    public static Long getNumberValue(UserRole userRole){
-        return userRole.numberValue;
+    public static Long getId(UserRole userRole){
+        return userRole.Id;
     }
 
     public static UserRole reverseValue(String string){
@@ -30,10 +30,10 @@ public enum UserRole {
             return null;
         }
     }
-    public static UserRole reverseNumberValue(Long intValue){
-        if (ADMIN.numberValue.equals(intValue)){
+    public static UserRole reverseId(Long intValue){
+        if (ADMIN.Id.equals(intValue)){
             return ADMIN;
-        }else if (USER.numberValue.equals(intValue)){
+        }else if (USER.Id.equals(intValue)){
             return USER;
         }else {
             return null;
